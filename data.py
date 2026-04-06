@@ -64,6 +64,22 @@ def compare_answers(expected: str, given: str) -> bool:
     return expected.strip().upper() == given.strip().upper()
 
 def get_display_data() -> list[tuple[str, str, str]]:
-    """Return sorted (char, morse, category) tuples for the UI.
-    Category is one of: 'letter', 'number', 'punctuation'."""
-    pass
+    """Returns sorted (char, morse, category) tuples for the UI."""
+    def category(char):
+        if char.isalpha():   return 'letter'
+        if char.isdigit():   return 'number'
+        return 'punctuation'
+
+    def sort_key(item):
+        char = item[0]
+        if char.isalpha():  return (0, char)
+        if char.isdigit():  return (1, char)
+        return (2, char)
+
+    data = [
+        (char, morse, category(char))
+        for char, morse in MORSE_CODE.items()
+        if char != ' '
+    ]
+    return sorted(data, key=sort_key)
+
