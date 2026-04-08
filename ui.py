@@ -5,7 +5,7 @@ from storage import load_favourites, load_mastery, get_mastery_level
 from audio import play_char
 
 ctk.set_appearance_mode('system')
-ctk.set_default_color_theme('blue')
+ctk.set_default_color_theme("minty.json")
 
 MASTERY_COLORS = {
     'unseen':   '#B4B2A9',
@@ -16,7 +16,7 @@ MASTERY_COLORS = {
 class MorseDictionary(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title('Morse Learner — Dictionary')
+        self.title('Encoder! Morse')
         self.geometry('1000x700')
 
         self._all_cards     = get_display_data()
@@ -42,12 +42,12 @@ class MorseDictionary(ctk.CTk):
 
         ctk.CTkLabel(
             toolbar, text='Morse Dictionary',
-            font=ctk.CTkFont(size=20, weight='bold')
+            font=ctk.CTkFont(size=20, weight='bold', family='Courier New')
         ).grid(row=0, column=0, sticky='w')
 
         self._size_btn = ctk.CTkButton(
-            toolbar, text='Compact view', width=120,
-            command=self._toggle_card_size
+            toolbar, text='Compact view', width=120, font=ctk.CTkFont(size=12, weight='bold', family='Courier New'),
+            command=self._toggle_card_size, corner_radius=20
         )
         self._size_btn.grid(row=0, column=1, sticky='e')
 
@@ -55,7 +55,8 @@ class MorseDictionary(ctk.CTk):
         search_frame = ctk.CTkFrame(self, fg_color='transparent')
         search_frame.grid(row=1, column=0, sticky='ew', padx=16, pady=4)
 
-        ctk.CTkLabel(search_frame, text='Search:').pack(side='left', padx=(0, 8))
+        ctk.CTkLabel(search_frame, text='Search:', font=ctk.CTkFont(size=12, weight='bold', family='Courier New')).pack(
+            side='left', padx=(0, 8))
         self._search_var = ctk.StringVar()
         self._search_var.trace_add('write', self._on_search)
         ctk.CTkEntry(
@@ -76,7 +77,7 @@ class MorseDictionary(ctk.CTk):
                               ('Numbers', 'number'), ('Punctuation', 'punctuation')]:
             btn = ctk.CTkButton(
                 filter_frame, text=label, width=100,
-                command=lambda v=value: self._set_filter(v)
+                command=lambda v=value: self._set_filter(v), font=ctk.CTkFont(size=12, weight='bold', family='Courier New')
             )
             btn.pack(side='left', padx=(0, 8))
             self._filter_buttons[value] = btn
@@ -140,30 +141,25 @@ class MorseDictionary(ctk.CTk):
         is_expanded   = self._card_size == 'expanded'
 
         # ↓ Parent is self._scroll_frame, not self
-        card = ctk.CTkFrame(self._scroll_frame, corner_radius=10)
+        card = ctk.CTkFrame(self._scroll_frame, corner_radius=10, border_width=1)
 
         ctk.CTkLabel(
             card, text=char,
-            font=ctk.CTkFont(size=22 if is_expanded else 14, weight='bold')
+            font=ctk.CTkFont(size=22 if is_expanded else 14, weight='bold', family='Courier New')
         ).pack(pady=(10, 2))
 
         if is_expanded:
             self._draw_morse_symbols(card, morse)
-            ctk.CTkLabel(
-                card, text=morse,
-                font=ctk.CTkFont(family='Courier', size=11),
-                text_color='gray'
-            ).pack(pady=(0, 4))
-
+            
         # Mastery bar
         ctk.CTkFrame(
-            card, height=4, fg_color=mastery_color, corner_radius=0
-        ).pack(fill='x', pady=(4, 0))
+            card, height=4, fg_color=mastery_color, corner_radius=10
+        ).pack(padx=6, pady=(4, 0))
 
         # Play button
         ctk.CTkButton(
             card, text='▶', width=48,
-            command=lambda c=char: play_char(c)
+            command=lambda c=char: play_char(c), corner_radius=20
         ).pack(pady=8)
 
         return card
@@ -171,17 +167,17 @@ class MorseDictionary(ctk.CTk):
     def _draw_morse_symbols(self, parent, morse: str):
         canvas = tk.Canvas(
             parent, height=18,
-            bg=self._get_canvas_bg(),
+            bg='#1C1427' if ctk.get_appearance_mode() == 'Dark' else '#CCFFBD',
             highlightthickness=0
         )
         canvas.pack(pady=4)
         x = 4
         for symbol in morse:
             if symbol == '.':
-                canvas.create_oval(x, 4, x + 10, 14, fill='#888780', outline='')
+                canvas.create_oval(x, 4, x + 10, 14, fill="#7ECA9C", outline='')
                 x += 18
             elif symbol == '-':
-                canvas.create_rectangle(x, 7, x + 26, 13, fill='#888780', outline='')
+                canvas.create_rectangle(x, 7, x + 26, 13, fill="#7ECA9C", outline='')
                 x += 34
         canvas.configure(width=x + 4)
 
